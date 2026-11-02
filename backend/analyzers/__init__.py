@@ -1,0 +1,1 @@
+"""FraudCheck document analyzers package."""

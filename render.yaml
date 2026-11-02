@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: fraudcheck
+    runtime: docker
+    plan: free
+    branch: main
+    envVars:
+      - key: PORT
+        value: 8000
