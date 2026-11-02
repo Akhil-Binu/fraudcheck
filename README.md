@@ -92,3 +92,20 @@ cd frontend
 npm run dev
 ```
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 🚀 Deploy to Vercel
+
+The repository is pre-configured with [`vercel.json`](file:///c:/Users/Akhil%20Binu/Documents/Code/Fraudcheck/vercel.json) and a Serverless Python API entrypoint at [`api/index.py`](file:///c:/Users/Akhil%20Binu/Documents/Code/Fraudcheck/api/index.py).
+
+### 1-Click Git Deployment (Recommended)
+1. Push this repository to GitHub:
+   ```powershell
+   git remote add origin https://github.com/<your-username>/fraudcheck.git
+   git branch -M main
+   git push -u origin main
+   ```
+2. Go to **[vercel.com/new](https://vercel.com/new)**.
+3. Import your `fraudcheck` repository and click **Deploy**.
+4. Vercel will automatically build the React Vite frontend, deploy the Python FastAPI backend to Serverless Functions, and give you a free permanent HTTPS URL (`https://fraudcheck-xxx.vercel.app`).
