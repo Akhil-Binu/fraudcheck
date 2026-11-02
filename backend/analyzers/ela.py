@@ -14,7 +14,13 @@ import logging
 import tempfile
 from pathlib import Path
 
-import cv2
+try:
+    import cv2
+    _HAS_CV2 = True
+except Exception as _cv2_err:
+    _HAS_CV2 = False
+    cv2 = None
+
 import pymupdf as fitz
 import numpy as np
 from PIL import Image
@@ -80,25 +86,50 @@ def _compute_ela(original: Image.Image) -> tuple[np.ndarray, np.ndarray]:
 
     # Scale and clamp for visualisation.
     scaled = np.clip(diff_gray * ELA_SCALE, 0, 255).astype(np.uint8)
-    heatmap = cv2.applyColorMap(scaled, cv2.COLORMAP_JET)
+    if _HAS_CV2 and cv2 is not None:
+        heatmap = cv2.applyColorMap(scaled, cv2.COLORMAP_JET)
+    else:
+        heatmap = _apply_jet_colormap(scaled)
 
     return diff_gray, heatmap
+
+
+def _apply_jet_colormap(gray: np.ndarray) -> np.ndarray:
+    """Pure NumPy JET colormap calculation (RGB)."""
+    val = gray.astype(np.float64) / 255.0
+    r = np.clip(1.5 - np.abs(4.0 * val - 3.0), 0.0, 1.0)
+    g = np.clip(1.5 - np.abs(4.0 * val - 2.0), 0.0, 1.0)
+    b = np.clip(1.5 - np.abs(4.0 * val - 1.0), 0.0, 1.0)
+    return (np.stack([r, g, b], axis=-1) * 255.0).astype(np.uint8)
 
 
 def _count_suspicious_regions(diff_gray: np.ndarray) -> int:
     """Threshold the difference image and count large contours."""
     binary = (diff_gray > DIFFERENCE_THRESHOLD).astype(np.uint8) * 255
-    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    return sum(1 for c in contours if cv2.contourArea(c) >= CONTOUR_AREA_THRESHOLD)
+    if _HAS_CV2 and cv2 is not None:
+        contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        return sum(1 for c in contours if cv2.contourArea(c) >= CONTOUR_AREA_THRESHOLD)
+    else:
+        return int(np.sum(diff_gray > DIFFERENCE_THRESHOLD) // (CONTOUR_AREA_THRESHOLD * 2))
 
 
 def _heatmap_to_base64(heatmap: np.ndarray) -> str:
-    """Encode a BGR heatmap array as a base64 PNG string."""
-    success, encoded = cv2.imencode(".png", heatmap)
-    if not success:
-        logger.error("Failed to encode ELA heatmap to PNG")
+    """Encode a heatmap array as a base64 PNG string."""
+    if _HAS_CV2 and cv2 is not None:
+        success, encoded = cv2.imencode(".png", heatmap)
+        if success:
+            return base64.b64encode(encoded.tobytes()).decode("ascii")
+
+    # Pillow fallback
+    try:
+        rgb_arr = heatmap[:, :, ::-1] if (_HAS_CV2 and cv2 is not None) else heatmap
+        pil_img = Image.fromarray(rgb_arr)
+        buf = io.BytesIO()
+        pil_img.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode("ascii")
+    except Exception as exc:
+        logger.error("Failed to encode ELA heatmap to PNG: %s", exc)
         return ""
-    return base64.b64encode(encoded.tobytes()).decode("ascii")
 
 
 def _risk_from_metrics(
