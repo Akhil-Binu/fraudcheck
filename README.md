@@ -1,6 +1,8 @@
 # 🧾 FraudCheck — Tampered Invoice & Digital Document Forensics
 
 [![Live Production](https://img.shields.io/badge/Vercel-Live%20Demo-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://fraudcheck-taupe.vercel.app)
+[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-Published-blue?style=for-the-badge&logo=github)](https://github.com/Akhil-Binu/fraudcheck/packages)
+[![Docker Image](https://img.shields.io/badge/Docker-GHCR-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://github.com/Akhil-Binu/fraudcheck/pkgs/container/fraudcheck)
 [![API Documentation](https://img.shields.io/badge/FastAPI-Swagger%20Docs-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fraudcheck-taupe.vercel.app/docs)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Akhil--Binu%2Ffraudcheck-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Akhil-Binu/fraudcheck)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
@@ -15,6 +17,9 @@
 ## 🌐 Live Deployment & Links
 
 - **🚀 Live Web Application:** [https://fraudcheck-taupe.vercel.app](https://fraudcheck-taupe.vercel.app)
+- **📦 GitHub Packages:** [https://github.com/Akhil-Binu/fraudcheck/packages](https://github.com/Akhil-Binu/fraudcheck/packages)
+  - **Docker Container (GHCR):** `docker pull ghcr.io/akhil-binu/fraudcheck:latest`
+  - **npm Package:** `npm install @akhil-binu/fraudcheck`
 - **📖 Interactive API Docs (Swagger):** [https://fraudcheck-taupe.vercel.app/docs](https://fraudcheck-taupe.vercel.app/docs)
 - **🩺 API Health Check:** [https://fraudcheck-taupe.vercel.app/api/health](https://fraudcheck-taupe.vercel.app/api/health)
 - **🐙 GitHub Repository:** [https://github.com/Akhil-Binu/fraudcheck](https://github.com/Akhil-Binu/fraudcheck)

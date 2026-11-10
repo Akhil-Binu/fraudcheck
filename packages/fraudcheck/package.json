@@ -1,0 +1,44 @@
+{
+  "name": "@akhil-binu/fraudcheck",
+  "version": "1.0.0",
+  "description": "Client SDK and banking identifier forensic validator for FraudCheck",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/test.js",
+    "build": "node scripts/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akhil-Binu/fraudcheck.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [
+    "fraudcheck",
+    "forensics",
+    "invoice-fraud",
+    "iban-validator",
+    "mod97",
+    "ifsc-validator",
+    "gstin-validator",
+    "document-security"
+  ],
+  "author": "Akhil Binu",
+  "license": "MIT"
+}
