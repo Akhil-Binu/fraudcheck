@@ -1,187 +1,132 @@
-import {
-  CheckCircle,
-  XCircle,
-  CreditCard,
-  AlertTriangle,
-  Info,
-  ShieldCheck,
-} from 'lucide-react';
-
-function riskBadge(level) {
-  const map = {
-    low: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-    high: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-    critical: 'bg-red-500/10 text-red-400 border-red-500/20',
-  };
-  return map[level] || map.low;
-}
-
-const TYPE_COLORS = {
-  IBAN: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-  IFSC: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
-  GSTIN: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/25',
-  PAN: 'bg-pink-500/15 text-pink-400 border-pink-500/25',
-  UPI: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/25',
-};
-
-function getTypeColor(type) {
-  return (
-    TYPE_COLORS[type?.toUpperCase()] ||
-    'bg-slate-600/15 text-slate-400 border-slate-500/25'
-  );
-}
+import { CheckCircle2, AlertTriangle, ShieldCheck, CreditCard } from 'lucide-react';
 
 export default function ValidationPanel({ validation }) {
-  if (!validation) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-slate-400">
-        <CreditCard className="w-12 h-12 mb-3 opacity-40" />
-        <p>No validation data available</p>
-      </div>
-    );
-  }
-
-  const identifiers = validation.matches || validation.identifiers || [];
-  const riskLevel = validation.risk_level || 'low';
-  const validCount = identifiers.filter((id) => id.valid ?? id.is_valid).length;
-  const invalidCount = identifiers.filter((id) => !(id.valid ?? id.is_valid)).length;
-
-  if (identifiers.length === 0) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-100">
-            Financial Identifier Validation
-          </h3>
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold border ${riskBadge(riskLevel)}`}
-          >
-            {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} Risk
-          </span>
-        </div>
-        <div className="flex flex-col items-center justify-center py-12 bg-slate-800/30 rounded-xl border border-slate-700/50">
-          <Info className="w-10 h-10 text-slate-500 mb-3" />
-          <p className="text-slate-300 font-medium">
-            No financial identifiers found
-          </p>
-          <p className="text-sm text-slate-500 mt-1">
-            No IBAN, IFSC, GSTIN, PAN, or UPI IDs were detected in this document
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const matches = validation?.matches || validation?.identifiers || [];
+  const flags = validation?.suspicious_flags || [];
+  const riskNorm = (validation?.risk_level || 'low').toUpperCase();
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-lg font-semibold text-slate-100">
-          Financial Identifier Validation
-        </h3>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-semibold border ${riskBadge(riskLevel)}`}
-        >
-          {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} Risk
-        </span>
-      </div>
+    <div className="space-y-8">
+      {/* Header bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#222222] pb-4">
+        <div>
+          <span className="font-mono text-[11px] text-neutral-400 uppercase tracking-widest block">
+            // TELEMETRY MODULE 04
+          </span>
+          <h3 className="text-xl font-black uppercase tracking-tight text-white font-sans mt-0.5">
+            FINANCIAL CHECKSUMS &amp; REGISTRY VALIDATION
+          </h3>
+        </div>
 
-      {/* Summary stats */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">
-            Total Found
-          </p>
-          <p className="text-2xl font-bold text-slate-100">
-            {identifiers.length}
-          </p>
-        </div>
-        <div className="p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/15 text-center">
-          <p className="text-xs text-emerald-400 uppercase tracking-wider mb-1">
-            Valid
-          </p>
-          <p className="text-2xl font-bold text-emerald-400">{validCount}</p>
-        </div>
-        <div className="p-4 bg-red-500/5 rounded-xl border border-red-500/15 text-center">
-          <p className="text-xs text-red-400 uppercase tracking-wider mb-1">
-            Invalid
-          </p>
-          <p className="text-2xl font-bold text-red-400">{invalidCount}</p>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs text-neutral-400 uppercase">CHECKSUM STATUS:</span>
+          <span
+            className={`px-3 py-1 border font-mono text-xs font-bold uppercase tracking-wider ${
+              riskNorm === 'CRITICAL' || riskNorm === 'HIGH'
+                ? 'border-[#FF3333] bg-[#FF3333]/10 text-[#FF3333]'
+                : riskNorm === 'MEDIUM'
+                ? 'border-amber-500 bg-amber-500/10 text-amber-400'
+                : 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
+            }`}
+          >
+            {riskNorm} RISK
+          </span>
         </div>
       </div>
 
-      {/* Suspicious flags */}
-      {validation.suspicious_flags && validation.suspicious_flags.length > 0 && (
-        <div className="space-y-2">
-          {validation.suspicious_flags.map((flag, i) => (
-            <div
-              key={i}
-              className="flex items-start gap-3 p-3 bg-amber-500/5 border border-amber-500/15 rounded-xl"
-            >
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-200">{flag}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {(!validation.suspicious_flags || validation.suspicious_flags.length === 0) && (
-        <div className="flex items-start gap-3 p-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl">
-          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-          <p className="text-sm text-emerald-200">
-            All financial identifiers passed validation
-          </p>
-        </div>
-      )}
-
-      {/* Identifier list */}
+      {/* Identifiers Ledger Table */}
       <div className="space-y-3">
-        {identifiers.map((id, i) => {
-          const isValid = Boolean(id.valid ?? id.is_valid);
-          return (
-            <div
-              key={i}
-              className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 flex items-start gap-4"
-            >
-              <div className="shrink-0 mt-0.5">
-                {isValid ? (
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
-                ) : (
-                  <XCircle className="w-5 h-5 text-red-400" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span
-                    className={`px-2 py-0.5 rounded text-xs font-medium border ${getTypeColor(
-                      id.type
-                    )}`}
-                  >
-                    {id.type}
-                  </span>
-                  <span
-                    className={`text-xs font-medium ${
-                      isValid ? 'text-emerald-400' : 'text-red-400'
-                    }`}
-                  >
-                    {isValid ? 'Valid' : 'Invalid'}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-200 font-mono break-all">
-                  {id.value}
-                </p>
-                {id.details && (
-                  <p className="text-xs text-slate-400 mt-1">{id.details}</p>
-                )}
-                {id.reason && !isValid && id.reason !== id.details && (
-                  <p className="text-xs text-red-300/70 mt-1">{id.reason}</p>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        <div className="flex items-center justify-between font-mono text-xs text-neutral-400 uppercase tracking-wider">
+          <span>// PARSED IDENTIFIER REGISTRY</span>
+          <span>{matches.length} RECORD{matches.length !== 1 ? 'S' : ''} FOUND</span>
+        </div>
+
+        {matches.length === 0 ? (
+          <div className="p-8 border border-[#222222] bg-[#121212] text-center font-mono text-xs text-neutral-400 space-y-1">
+            <p>// NO BANKING OR TAX IDENTIFIERS EXTRACTED FROM DOCUMENT TEXT</p>
+            <p className="text-neutral-500 text-[11px]">Searched for IBAN, IFSC, GSTIN, PAN, and UPI VPA patterns.</p>
+          </div>
+        ) : (
+          <div className="border border-[#222222] bg-[#121212] overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs">
+              <thead>
+                <tr className="border-b border-[#222222] bg-[#161616] text-[10px] text-neutral-400 uppercase tracking-wider">
+                  <th className="py-2.5 px-4">#</th>
+                  <th className="py-2.5 px-4">TYPE</th>
+                  <th className="py-2.5 px-4">EXTRACTED VALUE</th>
+                  <th className="py-2.5 px-4">ALGORITHM / DIAGNOSTIC</th>
+                  <th className="py-2.5 px-4 text-right">VERDICT</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#1E1E1E]">
+                {matches.map((item, idx) => {
+                  const isValid = item.valid ?? item.is_valid ?? false;
+                  return (
+                    <tr
+                      key={idx}
+                      className={isValid ? 'hover:bg-[#181818]' : 'bg-[#FF3333]/5 hover:bg-[#FF3333]/10'}
+                    >
+                      <td className="py-3 px-4 text-neutral-500 text-[11px]">
+                        0{idx + 1}
+                      </td>
+                      <td className="py-3 px-4 font-bold text-white uppercase">
+                        {item.type}
+                      </td>
+                      <td className="py-3 px-4 font-bold text-white tracking-wide">
+                        {item.value}
+                      </td>
+                      <td className="py-3 px-4 text-neutral-300 font-sans text-xs">
+                        {item.details || item.reason || 'Structural format check'}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 border text-[10px] font-bold tracking-wider uppercase font-mono ${
+                            isValid
+                              ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10'
+                              : 'border-[#FF3333] text-[#FF3333] bg-[#FF3333]/20 font-black'
+                          }`}
+                        >
+                          {isValid ? 'PASS' : 'FAIL // REJECT'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
+
+      {/* Validation Discrepancy Findings */}
+      {flags.length > 0 && (
+        <div className="space-y-3 pt-4 border-t border-[#222222]">
+          <div className="font-mono text-xs text-[#FF3333] font-bold uppercase tracking-wider">
+            // FAILED CHECKSUM DISCREPANCIES
+          </div>
+
+          <div className="space-y-2 font-mono">
+            {flags.map((flag, idx) => (
+              <div
+                key={idx}
+                className="p-3.5 border border-[#FF3333]/30 bg-[#FF3333]/5 flex items-start gap-3 text-xs text-[#FF3333]"
+              >
+                <div className="w-4 h-4 bg-[#FF3333] text-black font-black flex items-center justify-center shrink-0 text-[10px] mt-0.5">
+                  !
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider font-bold block text-neutral-400">
+                    CHECKSUM VIOLATION 0{idx + 1}
+                  </span>
+                  <p className="font-sans font-medium text-white text-xs sm:text-sm mt-0.5">
+                    {flag}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

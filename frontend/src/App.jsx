@@ -24,7 +24,7 @@ export default function App() {
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
-        'Analysis failed. Please try again.';
+        'ANALYSIS FAILED: PLEASE VERIFY FILE INTEGRITY AND RETRY.';
       setError(message);
     } finally {
       setLoading(false);
@@ -44,7 +44,7 @@ export default function App() {
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
-        'Failed to analyze demo sample.';
+        'FAILED TO EXECUTE DEMO FORENSIC SAMPLE.';
       setError(message);
     } finally {
       setLoading(false);
@@ -59,21 +59,65 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <Header onReset={handleReset} hasResult={!!analysisResult} />
+    <div className="min-h-screen bg-[#0A0A0A] bg-grid-pattern text-[#EDEDED] flex flex-col justify-between selection:bg-[#FF3333] selection:text-white">
+      <div>
+        <Header onReset={handleReset} hasResult={!!analysisResult} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!analysisResult ? (
-          <UploadZone
-            onUpload={handleUpload}
-            onSelectSample={handleSampleSelect}
-            loading={loading}
-            error={error}
-          />
-        ) : (
-          <AnalysisDashboard result={analysisResult} />
-        )}
-      </main>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          {!analysisResult ? (
+            <UploadZone
+              onUpload={handleUpload}
+              onSelectSample={handleSampleSelect}
+              loading={loading}
+              error={error}
+            />
+          ) : (
+            <AnalysisDashboard result={analysisResult} />
+          )}
+        </main>
+      </div>
+
+      {/* Swiss Style Architectural Footer */}
+      <footer className="border-t border-[#222222] bg-[#0A0A0A] mt-16 font-mono text-xs text-neutral-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 bg-[#FF3333]"></span>
+              <span className="text-white font-bold tracking-tight uppercase">
+                FRAUDCHECK LABS
+              </span>
+              <span className="text-neutral-600">//</span>
+              <span className="text-[11px] text-neutral-400">
+                SWISS FORENSIC AUDIT SPEC 4.2
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 text-[11px]">
+              <a
+                href="https://github.com/Akhil-Binu/fraudcheck"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                [ GITHUB REPOSITORY ]
+              </a>
+              <span className="text-neutral-700">•</span>
+              <a
+                href="/docs"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                [ FASTAPI SWAGGER ]
+              </a>
+              <span className="text-neutral-700">•</span>
+              <span className="text-neutral-400">
+                ZERO PERSISTENCE MEMORY
+              </span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
