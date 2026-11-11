@@ -88,7 +88,15 @@ export default function App() {
               </span>
               <span className="text-neutral-600">//</span>
               <span className="text-[11px] text-neutral-400">
-                SWISS FORENSIC AUDIT SPEC 4.2
+                BUILT BY{' '}
+                <a
+                  href="https://github.com/Akhil-Binu"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white font-bold hover:text-[#FF3333] transition-colors underline decoration-neutral-700 underline-offset-4"
+                >
+                  AKHIL BINU
+                </a>
               </span>
             </div>
 
